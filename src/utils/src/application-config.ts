@@ -37,7 +37,8 @@ const DEFAULT_APPLICATION_CONFIG: Required<KeplerApplicationConfig<mapboxgl.Map>
   getMap: (mapRef: MapRef): mapboxgl.Map => mapRef?.getMap(),
   mapLibCssClass: 'maplibregl',
   mapLibName: 'MapLibre',
-  mapLibUrl: 'https://www.maplibre.org/'
+  mapLibUrl: 'https://www.maplibre.org/',
+  plugins: []
 };
 
 const applicationConfig: Required<KeplerApplicationConfig<mapboxgl.Map>> =

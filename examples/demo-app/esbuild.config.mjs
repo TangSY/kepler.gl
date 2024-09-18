@@ -23,6 +23,12 @@ const EXTERNAL_HUBBLE_SRC = join(LIB_DIR, '../../hubble.gl');
 
 const port = 8080;
 
+// Paths to DuckDB WASM files
+const duckdbWasmFiles = [
+  join(LIB_DIR, 'node_modules/@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.wasm'),
+  join(LIB_DIR, '/node_modules/@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js')
+];
+
 // add alias to serve from kepler src, resolve libraries so there is only one copy of them
 const RESOLVE_LOCAL_ALIASES = {
   react: `${NODE_MODULES_DIR}/react`,
@@ -61,6 +67,19 @@ const config = {
       __PACKAGE_VERSION__: KeplerPackage.version,
       include: /constants\/src\/default-settings\.ts/
     })
+
+    // {
+    //   name: 'duckdb-wasm',
+    //   setup(build) {
+    //     // Copy the DuckDB WASM files to the output folder
+    //     build.onResolve({filter: /.wasm$/}, () => {
+    //       return {path: duckdbWasmFiles[0], namespace: 'file'};
+    //     });
+    //     build.onResolve({filter: /.worker.js$/}, () => {
+    //       return {path: duckdbWasmFiles[1], namespace: 'file'};
+    //     });
+    //   }
+    // }
   ]
 };
 
