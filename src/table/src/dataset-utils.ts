@@ -6,7 +6,12 @@ import KeplerTable, {Datasets} from './kepler-table';
 import {ProtoDataset, RGBColor} from '@kepler.gl/types';
 import Task from 'react-palm/tasks';
 
-import {hexToRgb, validateInputData, datasetColorMaker} from '@kepler.gl/utils';
+import {
+  hexToRgb,
+  validateInputData,
+  datasetColorMaker,
+  getApplicationConfig
+} from '@kepler.gl/utils';
 
 // apply a color for each dataset
 // to use as label colors
@@ -47,11 +52,11 @@ export function createNewDataEntry(
   {info, data, ...opts}: ProtoDataset,
   datasets: Datasets = {}
 ): Datasets {
-  const validatedData = validateInputData(data);
-  if (!validatedData) {
-    return {};
-  }
-
+  // const validatedData = validateInputData(data);
+  // if (!validatedData) {
+  //   return {};
+  // }
+  const validatedData = data;
   // check if dataset already exists, and update it when loading data by batches incrementally
   if (info && info.id && datasets[info.id]) {
     // get keplerTable from datasets
@@ -68,7 +73,13 @@ export function createNewDataEntry(
   const color = info.color || getNewDatasetColor(datasets);
 
   // const keplerTable = new KeplerTable({info, data: validatedData, color, ...opts});
-  return CREATE_TABLE_TASK({TableClass: KeplerTable, info, color, opts, data: validatedData});
+  return CREATE_TABLE_TASK({
+    // TableClass: getApplicationConfig().table ?? KeplerTable,
+    info,
+    color,
+    opts,
+    data: validatedData
+  });
   // return {
   //   [keplerTable.id]: keplerTable
   // };
@@ -78,10 +89,13 @@ async function updateTable({table, data}) {
   const updated = await table.update(data); // Assuming `table` has an `update` method
   return updated;
 }
-async function createTable({TableClass, info, color, opts, data}) {
-  const keplerTable = await new TableClass({info, data, color, ...opts});
 
-  return keplerTable;
+async function createTable({info, color, opts, data}) {
+  const TableClass = getApplicationConfig().table ?? KeplerTable;
+  const table = new TableClass({info, color, ...opts});
+  await table.importData({data});
+
+  return table;
 }
 const UPDATE_TABLE_TASK = Task.fromPromise(updateTable, 'UPDATE_TABLE_TASK');
 const CREATE_TABLE_TASK = Task.fromPromise(createTable, 'CREATE_TABLE_TASK');

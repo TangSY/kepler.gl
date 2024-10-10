@@ -23,6 +23,10 @@ export type KeplerApplicationConfig<Map> = {
   mapLibCssClass?: string;
   mapLibName?: string;
   mapLibUrl?: string;
+  plugins?: any[];
+  // kepler table alternative
+  // TODO improve typing by exporting KeplerTable interface to @kepler.gl/types
+  table?: any;
 };
 
 const DEFAULT_APPLICATION_CONFIG: Required<KeplerApplicationConfig<mapboxgl.Map>> = {
@@ -38,7 +42,8 @@ const DEFAULT_APPLICATION_CONFIG: Required<KeplerApplicationConfig<mapboxgl.Map>
   mapLibCssClass: 'maplibregl',
   mapLibName: 'MapLibre',
   mapLibUrl: 'https://www.maplibre.org/',
-  plugins: []
+  plugins: [],
+  table: undefined
 };
 
 const applicationConfig: Required<KeplerApplicationConfig<mapboxgl.Map>> =

@@ -113,14 +113,12 @@ class KeplerTable {
 
   constructor({
     info,
-    data,
     color,
     metadata,
     supportedFilterTypes = null,
     disableDataOperation = false
   }: {
     info?: ProtoDataset['info'];
-    data: ProtoDataset['data'];
     color: RGBColor;
     metadata?: ProtoDataset['metadata'];
     supportedFilterTypes?: ProtoDataset['supportedFilterTypes'];
@@ -132,32 +130,13 @@ class KeplerTable {
     //   return this;
     // }
 
-    const dataContainerData = data.cols ? data.cols : data.rows;
-    const inputDataFormat = data.cols ? DataForm.COLS_ARRAY : DataForm.ROWS_ARRAY;
-
-    const dataContainer = createDataContainer(dataContainerData, {
-      // @ts-expect-error ProtoDataset field missing property fieldIdx, valueAccessor
-      fields: data.fields,
-      inputDataFormat
-    });
-
     const datasetInfo = {
       id: generateHashId(4),
       label: 'new dataset',
       type: '',
       ...info
     };
-    const dataId = datasetInfo.id;
-    // @ts-expect-error
-    const fields: Field[] = data.fields.map((f, i) => ({
-      ...f,
-      fieldIdx: i,
-      id: f.name,
-      displayName: f.displayName || f.name,
-      valueAccessor: getFieldValueAccessor(f, i, dataContainer)
-    }));
 
-    const allIndexes = dataContainer.getPlainIndex();
     const defaultMetadata = {
       id: datasetInfo.id,
       // @ts-ignore
@@ -174,15 +153,35 @@ class KeplerTable {
       ...metadata
     };
 
+    this.supportedFilterTypes = supportedFilterTypes;
+    this.disableDataOperation = disableDataOperation;
+  }
+
+  import({data}: {data: ProtoDataset['data']}) {
+    const dataContainerData = data.cols ? data.cols : data.rows;
+    const inputDataFormat = data.cols ? DataForm.COLS_ARRAY : DataForm.ROWS_ARRAY;
+
+    const dataContainer = createDataContainer(dataContainerData, {
+      fields: data.fields,
+      inputDataFormat
+    });
+
+    const fields: Field[] = data.fields.map((f, i) => ({
+      ...f,
+      fieldIdx: i,
+      id: f.name,
+      displayName: f.displayName || f.name,
+      valueAccessor: getFieldValueAccessor(f, i, dataContainer)
+    }));
+
+    const allIndexes = dataContainer.getPlainIndex();
     this.dataContainer = dataContainer;
     this.allIndexes = allIndexes;
     this.filteredIndex = allIndexes;
     this.filteredIndexForDomain = allIndexes;
     this.fieldPairs = findPointFieldPairs(fields);
     this.fields = fields;
-    this.gpuFilter = getGpuFilterProps([], dataId, fields);
-    this.supportedFilterTypes = supportedFilterTypes;
-    this.disableDataOperation = disableDataOperation;
+    this.gpuFilter = getGpuFilterProps([], this.id, fields);
   }
 
   /**

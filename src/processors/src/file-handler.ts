@@ -7,7 +7,12 @@ import {JSONLoader, _JSONPath} from '@loaders.gl/json';
 import {CSVLoader} from '@loaders.gl/csv';
 import {ArrowLoader} from '@loaders.gl/arrow';
 import {Loader} from '@loaders.gl/loader-utils';
-import {generateHashId, isPlainObject, generateHashIdFromString} from '@kepler.gl/utils';
+import {
+  generateHashId,
+  isPlainObject,
+  generateHashIdFromString,
+  getApplicationConfig
+} from '@kepler.gl/utils';
 import {DATASET_FORMATS} from '@kepler.gl/constants';
 import {LoadedMap, ProcessorResult} from '@kepler.gl/types';
 import {Feature, AddDataToMapPayload} from '@kepler.gl/types';
@@ -205,24 +210,34 @@ export function processFileData({
     const {fileName, data} = content;
     let format: string | undefined;
     let processor: ((data: any) => ProcessorResult | LoadedMap | null) | undefined;
-
+    console.log('Processing file', fileName);
     // generate unique id with length of 4 using fileName string
     const id = generateHashIdFromString(fileName);
+    // decide on which table class to use based on application config
+    const table = getApplicationConfig().table;
 
-    if (isArrowData(data)) {
-      format = DATASET_FORMATS.arrow;
-      processor = processArrowBatches;
-    } else if (isKeplerGlMap(data)) {
-      format = DATASET_FORMATS.keplergl;
-      processor = processKeplerglJSON;
-    } else if (isRowObject(data)) {
-      format = DATASET_FORMATS.row;
-      processor = processRowObject;
-    } else if (isGeoJson(data)) {
-      format = DATASET_FORMATS.geojson;
-      processor = processGeojson;
+    if (typeof table.getFileProcessor === 'function') {
+      // use custom processors from table class
+      const processorResult = table.getFileProcessor(data);
+      format = processorResult.format;
+      processor = processorResult.processor;
+    } else {
+      // use default processors
+      if (isArrowData(data)) {
+        format = DATASET_FORMATS.arrow;
+        processor = processArrowBatches;
+      } else if (isKeplerGlMap(data)) {
+        format = DATASET_FORMATS.keplergl;
+        processor = processKeplerglJSON;
+      } else if (isRowObject(data)) {
+        // csv file goes here
+        format = DATASET_FORMATS.row;
+        processor = processRowObject;
+      } else if (isGeoJson(data)) {
+        format = DATASET_FORMATS.geojson;
+        processor = processGeojson;
+      }
     }
-
     if (format && processor) {
       const result = processor(data);
 
