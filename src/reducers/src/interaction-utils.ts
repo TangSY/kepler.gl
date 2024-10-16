@@ -11,15 +11,8 @@ import {
 } from '@kepler.gl/constants';
 
 import {Field, TooltipField, CompareType} from '@kepler.gl/types';
-import {
-  DataRow,
-  parseFieldValue,
-  getFormatter,
-  isNumber,
-  defaultFormatter,
-  notNullorUndefined
-} from '@kepler.gl/utils';
-
+import {DataRow, parseFieldValue, getFormatter, isNumber, defaultFormatter} from '@kepler.gl/utils';
+import {notNullorUndefined} from '@kepler.gl/common-utils';
 /**
  * Minus sign used in tooltip formatting.
  * \u2212 or \u002D is the minus sign that d3-format uses for decimal number formatting

@@ -6,7 +6,7 @@ import {routerReducer, routerMiddleware} from 'react-router-redux';
 import {browserHistory} from 'react-router';
 import {enhanceReduxMiddleware} from '@kepler.gl/reducers';
 import {createLogger} from 'redux-logger';
-import keplerGlDuckdbPlugin, {KeplerGlDuckDbTable} from '@kepler.gl/duckdb-plugin';
+import keplerGlDuckdbPlugin, {KeplerGlDuckDbTable} from 'keplergl-duckdb-plugin';
 import {initApplicationConfig} from '@kepler.gl/utils';
 
 // initialize kepler application with duckdb plugin

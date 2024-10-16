@@ -36,9 +36,6 @@ export {
   findDefaultColorField,
   ACCEPTED_ANALYZER_TYPES,
   validateInputData,
-  getSampleForTypeAnalyze,
-  getFieldsFromData,
-  renameDuplicateFields,
   analyzerTypeToFieldType,
   getFormatLabels,
   getFieldFormatLabels

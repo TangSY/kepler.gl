@@ -11,14 +11,15 @@ import {ProcessorResult, Field} from '@kepler.gl/types';
 import {
   arrowDataTypeToAnalyzerDataType,
   arrowDataTypeToFieldType,
-  notNullorUndefined,
   hasOwnProperty,
-  isPlainObject,
-  analyzerTypeToFieldType,
+  isPlainObject
+} from '@kepler.gl/utils';
+import {notNullorUndefined, toArray} from '@kepler.gl/common-utils';
+import {
   getSampleForTypeAnalyze,
   getFieldsFromData,
-  toArray
-} from '@kepler.gl/utils';
+  analyzerTypeToFieldType
+} from '@kepler.gl/common-utils';
 import {KeplerGlSchema, ParsedDataset, SavedMap, LoadedMap} from '@kepler.gl/schemas';
 import {Feature} from '@nebula.gl/edit-modes';
 
@@ -247,7 +248,7 @@ export function processRowObject(rawData: unknown[]): ProcessorResult {
   const keys = Object.keys(rawData[0]); // [lat, lng, value]
   const rows = rawData.map(d => keys.map(key => d[key])); // [[31.27, 127.56, 3]]
 
-  // row object an still contain values like `Null` or `N/A`
+  // row object can still contain values like `Null` or `N/A`
   cleanUpFalsyCsvValue(rows);
 
   return processCsvData(rows, keys);

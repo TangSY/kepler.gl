@@ -12,6 +12,7 @@ import {
   TOOLTIP_KEY,
   TooltipFormat
 } from '@kepler.gl/constants';
+import {notNullorUndefined} from '@kepler.gl/common-utils';
 import {Millisecond, Field} from '@kepler.gl/types';
 
 import {snapToMarks} from './plot';
@@ -84,13 +85,6 @@ export function timeToUnixMilli(value: string | number | Date, format: string): 
     }
   }
   return null;
-}
-
-/**
- * whether null or undefined
- */
-export function notNullorUndefined<T extends NonNullable<any>>(d: T | null | undefined): d is T {
-  return d !== undefined && d !== null;
 }
 
 /**

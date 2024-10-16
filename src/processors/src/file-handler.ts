@@ -8,11 +8,12 @@ import {CSVLoader} from '@loaders.gl/csv';
 import {ArrowLoader} from '@loaders.gl/arrow';
 import {Loader} from '@loaders.gl/loader-utils';
 import {
-  generateHashId,
   isPlainObject,
   generateHashIdFromString,
-  getApplicationConfig
+  getApplicationConfig,
+  getError
 } from '@kepler.gl/utils';
+import {generateHashId} from '@kepler.gl/common-utils';
 import {DATASET_FORMATS} from '@kepler.gl/constants';
 import {LoadedMap, ProcessorResult} from '@kepler.gl/types';
 import {Feature, AddDataToMapPayload} from '@kepler.gl/types';
@@ -199,63 +200,69 @@ export async function readFileInBatches({
   return readBatch(progressIterator, file.name);
 }
 
-export function processFileData({
+export async function processFileData({
   content,
   fileCache
 }: {
   content: ProcessFileDataContent;
   fileCache: FileCacheItem[];
 }): Promise<FileCacheItem[]> {
-  return new Promise((resolve, reject) => {
-    const {fileName, data} = content;
-    let format: string | undefined;
-    let processor: ((data: any) => ProcessorResult | LoadedMap | null) | undefined;
-    console.log('Processing file', fileName);
-    // generate unique id with length of 4 using fileName string
-    const id = generateHashIdFromString(fileName);
-    // decide on which table class to use based on application config
-    const table = getApplicationConfig().table;
+  // return new Promise((resolve, reject) => {
 
-    if (typeof table.getFileProcessor === 'function') {
-      // use custom processors from table class
-      const processorResult = table.getFileProcessor(data);
-      format = processorResult.format;
-      processor = processorResult.processor;
-    } else {
-      // use default processors
-      if (isArrowData(data)) {
-        format = DATASET_FORMATS.arrow;
-        processor = processArrowBatches;
-      } else if (isKeplerGlMap(data)) {
-        format = DATASET_FORMATS.keplergl;
-        processor = processKeplerglJSON;
-      } else if (isRowObject(data)) {
-        // csv file goes here
-        format = DATASET_FORMATS.row;
-        processor = processRowObject;
-      } else if (isGeoJson(data)) {
-        format = DATASET_FORMATS.geojson;
-        processor = processGeojson;
-      }
+  const {fileName, data} = content;
+  let format: string | undefined;
+  let processor: ((data: any) => ProcessorResult | LoadedMap | null) | undefined;
+  console.log('Processing file', fileName);
+  // generate unique id with length of 4 using fileName string
+  const id = generateHashIdFromString(fileName);
+  // decide on which table class to use based on application config
+  const table = getApplicationConfig().table;
+
+  if (typeof table.getFileProcessor === 'function') {
+    // use custom processors from table class
+    const processorResult = table.getFileProcessor(data);
+    format = processorResult.format;
+    processor = processorResult.processor;
+  } else {
+    // use default processors
+    if (isArrowData(data)) {
+      format = DATASET_FORMATS.arrow;
+      processor = processArrowBatches;
+    } else if (isKeplerGlMap(data)) {
+      format = DATASET_FORMATS.keplergl;
+      processor = processKeplerglJSON;
+    } else if (isRowObject(data)) {
+      // csv file goes here
+      format = DATASET_FORMATS.row;
+      processor = processRowObject;
+    } else if (isGeoJson(data)) {
+      format = DATASET_FORMATS.geojson;
+      processor = processGeojson;
     }
-    if (format && processor) {
-      const result = processor(data);
+  }
+  if (format && processor) {
+    // eslint-disable-next-line no-useless-catch
+    let result;
+    try {
+      result = await processor(data);
+    } catch (error) {
+      throw new Error(`Can not process uploaded file, ${getError(error as Error)}`);
+    }
 
-      resolve([
-        ...fileCache,
-        {
-          data: result,
-          info: {
-            id,
-            label: content.fileName,
-            format
-          }
+    return [
+      ...fileCache,
+      {
+        data: result,
+        info: {
+          id,
+          label: content.fileName,
+          format
         }
-      ]);
-    }
-
-    reject('Unknown File Format');
-  });
+      }
+    ];
+  } else {
+    throw new Error('Can not process uploaded file, unknown file format');
+  }
 }
 
 export function filesToDataPayload(fileCache: FileCacheItem[]): AddDataToMapPayload[] {

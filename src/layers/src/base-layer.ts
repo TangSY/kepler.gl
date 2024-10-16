@@ -34,17 +34,16 @@ import {
 } from '@kepler.gl/constants';
 
 import {
-  generateHashId,
   getColorGroupByName,
   reverseColorRange,
   hexToRgb,
   getLatLngBounds,
   isPlainObject,
-  toArray,
-  notNullorUndefined,
   DataContainerInterface,
   getSampleContainerData
 } from '@kepler.gl/utils';
+
+import {generateHashId, toArray, notNullorUndefined} from '@kepler.gl/common-utils';
 
 import {
   RGBColor,

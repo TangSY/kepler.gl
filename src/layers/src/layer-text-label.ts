@@ -2,7 +2,7 @@
 // Copyright contributors to the kepler.gl project
 
 import {getDistanceScales} from 'viewport-mercator-project';
-import {notNullorUndefined} from '@kepler.gl/utils';
+import {notNullorUndefined} from '@kepler.gl/common-utils';
 import uniq from 'lodash.uniq';
 
 export const defaultPadding = 20;

@@ -42,9 +42,10 @@ import {
   FilterRecord
 } from '@kepler.gl/types';
 
+import {generateHashId, toArray, notNullorUndefined} from '@kepler.gl/common-utils';
 import {DataContainerInterface} from './data-container-interface';
-import {generateHashId, set, toArray} from './utils';
-import {notNullorUndefined, timeToUnixMilli, unique} from './data-utils';
+import {set} from './utils';
+import {timeToUnixMilli, unique} from './data-utils';
 import {getCentroid} from './h3-utils';
 
 export const durationSecond = 1000;

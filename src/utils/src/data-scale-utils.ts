@@ -2,8 +2,8 @@
 // Copyright contributors to the kepler.gl project
 
 import {extent} from 'd3-array';
-
-import {notNullorUndefined, unique} from './data-utils';
+import {notNullorUndefined} from '@kepler.gl/common-utils';
+import {unique} from './data-utils';
 import {DataContainerInterface} from './data-container-interface';
 
 type dataValueAccessor = <T>(param: T) => T;

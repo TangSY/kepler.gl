@@ -2,8 +2,7 @@
 // Copyright contributors to the kepler.gl project
 
 import {AnimationConfig, Timeline, TimeRangeFilter} from '@kepler.gl/types';
-
-import {toArray} from './utils';
+import {toArray} from '@kepler.gl/common-utils';
 
 export const TIMELINE_MODES = {
   inner: 'inner',

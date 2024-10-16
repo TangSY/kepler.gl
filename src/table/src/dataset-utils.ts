@@ -63,26 +63,17 @@ export function createNewDataEntry(
     const keplerTable = datasets[info.id];
     // update the data in keplerTable
     return UPDATE_TABLE_TASK({table: keplerTable, data: validatedData});
-    // keplerTable.update(validatedData);
-    // return {
-    //   [keplerTable.id]: keplerTable
-    // };
   }
 
   info = info || {};
   const color = info.color || getNewDatasetColor(datasets);
 
-  // const keplerTable = new KeplerTable({info, data: validatedData, color, ...opts});
   return CREATE_TABLE_TASK({
-    // TableClass: getApplicationConfig().table ?? KeplerTable,
     info,
     color,
     opts,
     data: validatedData
   });
-  // return {
-  //   [keplerTable.id]: keplerTable
-  // };
 }
 
 async function updateTable({table, data}) {

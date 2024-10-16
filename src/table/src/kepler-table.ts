@@ -26,7 +26,6 @@ import {getGpuFilterProps, getDatasetFieldIndexForFilter} from './gpu-filter-uti
 
 import {Layer} from '@kepler.gl/layers';
 import {
-  generateHashId,
   getSortingFunction,
   timeToUnixMilli,
   createDataContainer,
@@ -43,9 +42,9 @@ import {
   getLogDomain,
   getOrdinalDomain,
   getQuantileDomain,
-  DataContainerInterface,
-  notNullorUndefined
+  DataContainerInterface
 } from '@kepler.gl/utils';
+import {generateHashId, notNullorUndefined} from '@kepler.gl/common-utils';
 
 export type GpuFilter = {
   filterRange: number[][];
@@ -157,7 +156,7 @@ class KeplerTable {
     this.disableDataOperation = disableDataOperation;
   }
 
-  import({data}: {data: ProtoDataset['data']}) {
+  importData({data}: {data: ProtoDataset['data']}) {
     const dataContainerData = data.cols ? data.cols : data.rows;
     const inputDataFormat = data.cols ? DataForm.COLS_ARRAY : DataForm.ROWS_ARRAY;
 

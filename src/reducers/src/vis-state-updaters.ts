@@ -12,7 +12,7 @@ import pick from 'lodash.pick';
 import isEqual from 'lodash.isequal';
 import copy from 'copy-to-clipboard';
 import deepmerge from 'deepmerge';
-import {Action, PayloadAction} from '@reduxjs/toolkit';
+import {PayloadAction} from '@reduxjs/toolkit';
 
 // Tasks
 import {LOAD_FILE_TASK, UNWRAP_TASK, PROCESS_FILE_DATA, DELAY_TASK} from '@kepler.gl/tasks';
@@ -40,9 +40,7 @@ import {
 // Utils
 import {
   set,
-  toArray,
   arrayInsert,
-  generateHashId,
   isPlainObject,
   isObject,
   addNewLayersToSplitMap,
@@ -65,7 +63,7 @@ import {
   getFilterPlot,
   getDefaultFilterPlotType
 } from '@kepler.gl/utils';
-
+import {generateHashId, toArray} from '@kepler.gl/common-utils';
 // Mergers
 import {
   VIS_STATE_MERGERS,
@@ -1982,7 +1980,7 @@ export const createNewDatasetSuccessUpdater = (
       return {...accu, [dataset.id]: dataset};
     } else {
       // handle create dataset error
-      console.error(result.reason);
+      console.error(result.reason || result.value);
       return accu;
     }
   }, {} as Datasets);
